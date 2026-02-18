@@ -1,0 +1,96 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "HomeChef Kitchen: Menu performance + anonymous cart fixes",
+  "requirements": [
+    {
+      "id": "REQ-23",
+      "summary": "Allow anonymous users to add menu items to a local cart; require authentication only when starting checkout/order placement.",
+      "acceptanceCriteria": [
+        "On /menu, clicking “Add to Cart” increases the cart count indicator in the navbar for anonymous users (not logged in).",
+        "The app does not show the error toast “Please sign in to add items to cart” when an anonymous user adds an item; instead, adding succeeds and the user can proceed to view the cart.",
+        "Checkout/order creation remains protected: an anonymous user attempting to checkout is prompted to sign in before any backend order creation/payment initiation occurs."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/MenuPage.tsx",
+          "operation": "modify",
+          "description": "Remove the authentication gate in the add-to-cart handler so anonymous users can add MenuItem to the local cart, and keep success toast messaging in English without prompting sign-in at add-to-cart time."
+        },
+        {
+          "path": "frontend/src/pages/CartPage.tsx",
+          "operation": "modify",
+          "description": "Gate checkout initiation (order creation + Stripe session start) behind authentication: when the user is anonymous, store the intended route and prompt sign-in using the existing authorization/Internet Identity flow (e.g., useInternetIdentity + useAuthRedirect). Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "summary": "Fix cart localStorage persistence by safely serializing/deserializing BigInt fields and restoring cart state after refresh.",
+      "acceptanceCriteria": [
+        "Adding an item to the cart does not throw runtime errors in the browser console related to JSON serialization (e.g., BigInt serialization errors).",
+        "After adding items to the cart, refreshing the page preserves the cart contents and quantities.",
+        "Removing items, updating quantities, and clearing the cart continues to work after introducing the persistence fix."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/cart/cartStorage.ts",
+          "operation": "create",
+          "description": "Add cart storage helpers that serialize cart state to JSON without BigInt errors (e.g., custom replacer) and deserialize it back (e.g., custom reviver) so MenuItem BigInt fields round-trip correctly."
+        },
+        {
+          "path": "frontend/src/cart/CartProvider.tsx",
+          "operation": "modify",
+          "description": "Replace direct JSON.parse/JSON.stringify usage with cartStorage helpers to persist and restore cart items (including MenuItem BigInt fields) reliably from localStorage, while keeping add/remove/update/clear behavior unchanged."
+        }
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "summary": "Improve menu loading UX and reliability with skeleton loading UI, React Query caching tuning, and a retryable error state.",
+      "acceptanceCriteria": [
+        "While menu data is loading, the Menu page shows a skeleton/placeholder grid instead of only a single 'Loading menu...' line.",
+        "Menu items render quickly on repeat navigations (e.g., returning to /menu) by using React Query caching (staleTime/gcTime) appropriate for menu data.",
+        "If fetching menu items or categories fails, the Menu page shows an English error message and provides a Retry action that refetches the menu successfully when the backend is available."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/menu/MenuSkeletonGrid.tsx",
+          "operation": "create",
+          "description": "Create a menu skeleton/placeholder grid component (Tailwind-based) to show multiple loading cards while menu queries are in-flight."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Tune React Query settings for menu queries (categories + available menu items) to improve perceived speed and repeat navigation performance (e.g., set staleTime/gcTime and retry behavior appropriate for menu data)."
+        },
+        {
+          "path": "frontend/src/pages/MenuPage.tsx",
+          "operation": "modify",
+          "description": "Replace the single-line loading state with the skeleton grid, and add an explicit error UI with an English message and a Retry action that refetches failed menu queries."
+        }
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "summary": "Make Cart navigation accessible for anonymous users while keeping Orders/Book Chef login-gated and Admin admin-only.",
+      "acceptanceCriteria": [
+        "Navbar shows a Cart link/icon for anonymous users and displays the current cart count based on local cart state.",
+        "Anonymous users can open /cart and see cart contents without being forced to log in.",
+        "Orders and Book Chef remain login-required as before, and Admin remains admin-only."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/layout/Navbar.tsx",
+          "operation": "modify",
+          "description": "Update navbar link and cart icon rendering so Cart is always visible (authenticated or not) and always reflects local cart count, while leaving Orders/Book Chef conditional on auth and Admin conditional on admin status."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Remove the RequireAuth wrapper from the /cart route so anonymous users can access the cart page, while keeping /orders, /book-chef, /bookings protected by RequireAuth and /admin routes protected by RequireAdmin (authorization). Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-18T12:11:08.565Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 4,
+    "implemented": 4,
+    "items": [
+      {
+        "id": "REQ-23",
+        "summary": "Fix the Menu page so users can add menu items to the cart even when not signed in, and only require authentication at checkout/placing an order (not at add-to-cart time).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/MenuPage.tsx",
+          "frontend/src/pages/CartPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/MenuPage.tsx",
+          "frontend/src/pages/CartPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-24",
+        "summary": "Fix cart state persistence so saving the cart to localStorage does not fail when cart items include BigInt fields (e.g., menu item id/price), and ensure the cart can be restored correctly after a refresh.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/cart/cartStorage.ts",
+          "frontend/src/cart/CartProvider.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/cart/cartStorage.ts",
+          "frontend/src/cart/CartProvider.tsx"
+        ]
+      },
+      {
+        "id": "REQ-25",
+        "summary": "Improve menu loading reliability and perceived performance by adding a proper loading UI (skeleton/placeholder grid), caching/tuning React Query settings for menu queries, and adding a clear error state with retry when menu fetch fails.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/menu/MenuSkeletonGrid.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/MenuPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/menu/MenuSkeletonGrid.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/MenuPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-26",
+        "summary": "Update navigation so the Cart entry and cart icon/button are available even when the user is not authenticated, while keeping Orders/Book Chef/Admin links gated appropriately.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/layout/Navbar.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/layout/Navbar.tsx",
+          "frontend/src/App.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/cart/CartProvider.tsx",
+    "frontend/src/cart/cartStorage.ts",
+    "frontend/src/components/layout/Navbar.tsx",
+    "frontend/src/components/menu/MenuSkeletonGrid.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/CartPage.tsx",
+    "frontend/src/pages/MenuPage.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

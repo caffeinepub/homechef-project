@@ -1,0 +1,95 @@
+{
+  "kind": "build_request",
+  "title": "Fix menu loading speed and cart add-to-cart issue",
+  "projectName": "HomeChef Kitchen",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-23",
+      "text": "Fix the Menu page so users can add menu items to the cart even when not signed in, and only require authentication at checkout/placing an order (not at add-to-cart time).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-7"
+        ],
+        "quotes": [
+          "fix the menu loading and fast loading of the application the item is not adding to the cart"
+        ]
+      },
+      "acceptanceCriteria": [
+        "On /menu, clicking “Add to Cart” increases the cart count indicator in the navbar for anonymous users (not logged in).",
+        "The app does not show the error toast “Please sign in to add items to cart” when an anonymous user adds an item; instead, adding succeeds and the user can proceed to view the cart.",
+        "Checkout/order creation remains protected: an anonymous user attempting to checkout is prompted to sign in before any backend order creation/payment initiation occurs."
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "text": "Fix cart state persistence so saving the cart to localStorage does not fail when cart items include BigInt fields (e.g., menu item id/price), and ensure the cart can be restored correctly after a refresh.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-7"
+        ],
+        "quotes": [
+          "the item is not adding to the cart"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Adding an item to the cart does not throw runtime errors in the browser console related to JSON serialization (e.g., BigInt serialization errors).",
+        "After adding items to the cart, refreshing the page preserves the cart contents and quantities.",
+        "Removing items, updating quantities, and clearing the cart continues to work after introducing the persistence fix."
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "text": "Improve menu loading reliability and perceived performance by adding a proper loading UI (skeleton/placeholder grid), caching/tuning React Query settings for menu queries, and adding a clear error state with retry when menu fetch fails.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-7"
+        ],
+        "quotes": [
+          "fix the menu loading and fast loading of the application"
+        ]
+      },
+      "acceptanceCriteria": [
+        "While menu data is loading, the Menu page shows a skeleton/placeholder grid instead of only a single 'Loading menu...' line.",
+        "Menu items render quickly on repeat navigations (e.g., returning to /menu) by using React Query caching (staleTime/gcTime) appropriate for menu data.",
+        "If fetching menu items or categories fails, the Menu page shows an English error message and provides a Retry action that refetches the menu successfully when the backend is available."
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "text": "Update navigation so the Cart entry and cart icon/button are available even when the user is not authenticated, while keeping Orders/Book Chef/Admin links gated appropriately.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-7"
+        ],
+        "quotes": [
+          "the item is not adding to the cart"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Navbar shows a Cart link/icon for anonymous users and displays the current cart count based on local cart state.",
+        "Anonymous users can open /cart and see cart contents without being forced to log in.",
+        "Orders and Book Chef remain login-required as before, and Admin remains admin-only."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit files under frontend/src/components/ui (shadcn components are read-only).",
+    "Do not edit immutable paths listed in SYSTEM_CONTEXT (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
+    "Keep all user-facing text in English.",
+    "Do not add Razorpay integration; Stripe-based payment flow must remain intact."
+  ],
+  "nonGoals": [
+    "No new payment providers or payment flow redesign beyond gating checkout behind authentication.",
+    "No backend schema/state migrations unless a concrete backend data bug is identified as the cause of menu loading failures.",
+    "No new features unrelated to menu loading performance and cart add-to-cart behavior."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
