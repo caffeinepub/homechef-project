@@ -18,6 +18,9 @@ export default function LoginButton() {
     } else {
       try {
         await login();
+        // After successful login, invalidate admin and profile queries to refresh immediately
+        await queryClient.invalidateQueries({ queryKey: ['isCallerAdmin'] });
+        await queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
       } catch (error: any) {
         console.error('Login error:', error);
         if (error.message === 'User is already authenticated') {

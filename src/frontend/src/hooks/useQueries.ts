@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import { useInternetIdentity } from './useInternetIdentity';
 import type { MenuItem, Order, ChefBooking, DashboardMetrics, UserProfile } from '../backend';
 
 // User Profile Queries
@@ -41,14 +42,19 @@ export function useSaveCallerUserProfile() {
 // Admin Check
 export function useIsCallerAdmin() {
   const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  const principalString = identity?.getPrincipal().toString() || 'anonymous';
 
   return useQuery<boolean>({
-    queryKey: ['isCallerAdmin'],
+    queryKey: ['isCallerAdmin', principalString],
     queryFn: async () => {
-      if (!actor) return false;
+      if (!actor || !identity) return false;
       return actor.isCallerAdmin();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && !!identity,
+    staleTime: 0, // Always refetch to ensure fresh admin status
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 }
 

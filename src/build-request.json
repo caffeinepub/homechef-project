@@ -1,95 +1,86 @@
 {
   "kind": "build_request",
-  "title": "Fix menu loading speed and cart add-to-cart issue",
+  "title": "Fix first-user admin bootstrap so Admin UI appears",
   "projectName": "HomeChef Kitchen",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-23",
-      "text": "Fix the Menu page so users can add menu items to the cart even when not signed in, and only require authentication at checkout/placing an order (not at add-to-cart time).",
-      "target": "frontend",
+      "id": "REQ-27",
+      "text": "Fix the Motoko backend admin bootstrap so that when no admin is configured yet, the first authenticated principal to call the backend is permanently assigned the admin role, and subsequent users are not assigned admin automatically.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-7"
+          "msg-6"
         ],
         "quotes": [
-          "fix the menu loading and fast loading of the application the item is not adding to the cart"
+          "admin is not showing to the first user"
         ]
       },
       "acceptanceCriteria": [
-        "On /menu, clicking “Add to Cart” increases the cart count indicator in the navbar for anonymous users (not logged in).",
-        "The app does not show the error toast “Please sign in to add items to cart” when an anonymous user adds an item; instead, adding succeeds and the user can proceed to view the cart.",
-        "Checkout/order creation remains protected: an anonymous user attempting to checkout is prompted to sign in before any backend order creation/payment initiation occurs."
+        "On a fresh canister (no admin assigned), the first Internet Identity user to make an authenticated backend call becomes the sole admin and remains admin after page refreshes and re-logins.",
+        "After the first admin is assigned, a different principal logging in is not treated as admin and cannot access admin-only backend methods.",
+        "The admin assignment is persisted in canister state (survives normal app usage and page refreshes)."
       ]
     },
     {
-      "id": "REQ-24",
-      "text": "Fix cart state persistence so saving the cart to localStorage does not fail when cart items include BigInt fields (e.g., menu item id/price), and ensure the cart can be restored correctly after a refresh.",
-      "target": "frontend",
+      "id": "REQ-28",
+      "text": "Ensure the backend method used by the frontend to determine admin status (frontend calls `actor.isCallerAdmin()`) participates in the admin bootstrap logic so the first authenticated user immediately receives `true` from `isCallerAdmin()` after login.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-7"
+          "msg-6"
         ],
         "quotes": [
-          "the item is not adding to the cart"
+          "admin is not showing to the first user"
         ]
       },
       "acceptanceCriteria": [
-        "Adding an item to the cart does not throw runtime errors in the browser console related to JSON serialization (e.g., BigInt serialization errors).",
-        "After adding items to the cart, refreshing the page preserves the cart contents and quantities.",
-        "Removing items, updating quantities, and clearing the cart continues to work after introducing the persistence fix."
+        "On a fresh canister, calling `isCallerAdmin()` as the first authenticated user returns `true` on that same login session (no manual reset/redeploy required).",
+        "If an admin is already assigned, `isCallerAdmin()` returns `true` only for that admin principal and `false` for all others.",
+        "If the caller is anonymous/unauthenticated, `isCallerAdmin()` returns `false` (and does not assign admin)."
       ]
     },
     {
-      "id": "REQ-25",
-      "text": "Improve menu loading reliability and perceived performance by adding a proper loading UI (skeleton/placeholder grid), caching/tuning React Query settings for menu queries, and adding a clear error state with retry when menu fetch fails.",
+      "id": "REQ-29",
+      "text": "Update the frontend so that immediately after a successful login, the UI re-checks admin status and updates navigation/admin gating without requiring a manual hard refresh, so the first user can see the \"Admin\" link as soon as they log in and are assigned admin.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-7"
+          "msg-6"
         ],
         "quotes": [
-          "fix the menu loading and fast loading of the application"
+          "admin is not showing to the first user"
         ]
       },
       "acceptanceCriteria": [
-        "While menu data is loading, the Menu page shows a skeleton/placeholder grid instead of only a single 'Loading menu...' line.",
-        "Menu items render quickly on repeat navigations (e.g., returning to /menu) by using React Query caching (staleTime/gcTime) appropriate for menu data.",
-        "If fetching menu items or categories fails, the Menu page shows an English error message and provides a Retry action that refetches the menu successfully when the backend is available."
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "text": "Update navigation so the Cart entry and cart icon/button are available even when the user is not authenticated, while keeping Orders/Book Chef/Admin links gated appropriately.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-7"
-        ],
-        "quotes": [
-          "the item is not adding to the cart"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Navbar shows a Cart link/icon for anonymous users and displays the current cart count based on local cart state.",
-        "Anonymous users can open /cart and see cart contents without being forced to log in.",
-        "Orders and Book Chef remain login-required as before, and Admin remains admin-only."
+        "After login, the navbar updates to show the \"Admin\" link as soon as `isCallerAdmin()` becomes `true`, without requiring a full page refresh.",
+        "After logout, the \"Admin\" link disappears and admin-only pages show the existing English \"Access Denied\" UI for non-admin users.",
+        "No changes are made to any files under `frontend/src/hooks/useInternetIdentity.ts` or other immutable paths listed in SYSTEM_CONTEXT."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (shadcn components are read-only).",
-    "Do not edit immutable paths listed in SYSTEM_CONTEXT (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
-    "Keep all user-facing text in English.",
-    "Do not add Razorpay integration; Stripe-based payment flow must remain intact."
+    "Backend must remain single-actor; all Motoko logic changes must stay in backend/main.mo (add migration.mo only if state schema changes require it).",
+    "Do not edit frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, and frontend/src/components/ui sources.",
+    "Use English for any user-facing text."
   ],
   "nonGoals": [
-    "No new payment providers or payment flow redesign beyond gating checkout behind authentication.",
-    "No backend schema/state migrations unless a concrete backend data bug is identified as the cause of menu loading failures.",
-    "No new features unrelated to menu loading performance and cart add-to-cart behavior."
+    "Do not add new authentication providers or replace Internet Identity.",
+    "Do not change Stripe payment functionality or payment messaging as part of this fix.",
+    "Do not redesign the Admin Dashboard UI beyond what is required for admin link/gating to reflect correct admin status."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

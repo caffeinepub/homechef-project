@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-menu-page-so-users-can-add-menu-items-to-the-cart-even-when-not-signed-in-and-only-require-authentication-at-checkout-placing-an-order-not-at-add-to-cart-time",
-      "featureTitle": "Fix the Menu page so users can add menu items to the cart even when not signed in, and only require authentication at checkout/placing an order (not at add-to-cart time).",
+      "featureId": "feature-update-the-frontend-so-that-immediately-after-a-successful-login-the-ui-re-checks-admin-status-and-updates-navigation-admin-gating-without-requiring-a-manual-hard-refresh-so-the-first-user-can-see-the-admin-link-as-soon-as-they-log-in-and-are-assigned-admin",
+      "featureTitle": "Update the frontend so that immediately after a successful login, the UI re-checks admin status and updates navigation/admin gating without requiring a manual hard refresh, so the first user can see the \"Admin\" link as soon as they log in and are assigned admin.",
       "files": [
-        "frontend/src/pages/CartPage.tsx",
-        "frontend/src/pages/MenuPage.tsx"
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,74 +19,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-23"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-fix-cart-state-persistence-so-saving-the-cart-to-localstorage-does-not-fail-when-cart-items-include-bigint-fields-e-g-menu-item-id-price-and-ensure-the-cart-can-be-restored-correctly-after-a-refresh",
-      "featureTitle": "Fix cart state persistence so saving the cart to localStorage does not fail when cart items include BigInt fields (e.g., menu item id/price), and ensure the cart can be restored correctly after a refresh.",
-      "files": [
-        "frontend/src/cart/CartProvider.tsx",
-        "frontend/src/cart/cartStorage.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "http-outcalls@3.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-24"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-improve-menu-loading-reliability-and-perceived-performance-by-adding-a-proper-loading-ui-skeleton-placeholder-grid-caching-tuning-react-query-settings-for-menu-queries-and-adding-a-clear-error-state-with-retry-when-menu-fetch-fails",
-      "featureTitle": "Improve menu loading reliability and perceived performance by adding a proper loading UI (skeleton/placeholder grid), caching/tuning React Query settings for menu queries, and adding a clear error state with retry when menu fetch fails.",
-      "files": [
-        "frontend/src/components/menu/MenuSkeletonGrid.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/MenuPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "http-outcalls@3.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-25"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-navigation-so-the-cart-entry-and-cart-icon-button-are-available-even-when-the-user-is-not-authenticated-while-keeping-orders-book-chef-admin-links-gated-appropriately",
-      "featureTitle": "Update navigation so the Cart entry and cart icon/button are available even when the user is not authenticated, while keeping Orders/Book Chef/Admin links gated appropriately.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/layout/Navbar.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "http-outcalls@3.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-26"
+        "REQ-29"
       ],
       "confidence": "high"
     }

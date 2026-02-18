@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Make the Menu and Cart experience fast and reliable by fixing add-to-cart for anonymous users, improving menu loading UX/performance, and ensuring cart persistence across refreshes.
+**Goal:** Ensure the first authenticated user on a fresh canister is permanently bootstrapped as the sole admin so the Admin UI appears immediately after login.
 
 **Planned changes:**
-- Allow anonymous users on `/menu` to add items to the cart without being prompted to sign in; require authentication only at checkout/order placement.
-- Fix cart persistence to localStorage when cart items contain `BigInt` fields, so serialization does not error and the cart restores correctly after refresh.
-- Improve Menu loading reliability and perceived performance by adding a skeleton/placeholder loading grid, tuning React Query caching for menu data, and adding an error state with Retry on fetch failures.
-- Update navigation so Cart link/icon (with cart count) is available to anonymous users, while keeping Orders/Book Chef/Admin gated as before.
+- Update backend admin bootstrap logic so that when no admin is set, the first *authenticated* principal making a backend call is assigned admin permanently, and no later principals are auto-assigned.
+- Ensure `isCallerAdmin()` participates in bootstrap: on a fresh canister, the first authenticated caller receives `true` immediately; anonymous callers receive `false` and do not trigger bootstrap.
+- Update frontend to re-check admin status immediately after successful login and update navbar/admin gating without requiring a hard refresh; ensure logout removes admin UI access and shows existing “Access Denied” behavior for non-admins.
 
-**User-visible outcome:** Users can browse `/menu`, add items to the cart and view `/cart` without signing in; the cart count updates immediately and persists after refresh; the Menu page loads with a skeleton UI, feels faster on repeat visits, and shows a clear retryable error state if loading fails.
+**User-visible outcome:** The first user to log in on a new deployment immediately sees the “Admin” link after login and retains admin access on refresh/re-login, while all other users do not see/administer admin-only features.
