@@ -13,10 +13,10 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import MenuAdminPage from './pages/admin/MenuAdminPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentFailurePage from './pages/PaymentFailurePage';
+import CheckoutWaitPage from './pages/CheckoutWaitPage';
 import RequireAuth from './components/auth/RequireAuth';
 import RequireAdmin from './components/admin/RequireAdmin';
 import { CartProvider } from './cart/CartProvider';
-import ProfileSetupDialog from './components/auth/ProfileSetupDialog';
 
 function Layout() {
   return (
@@ -26,7 +26,6 @@ function Layout() {
         <Outlet />
       </main>
       <Footer />
-      <ProfileSetupDialog />
       <Toaster />
     </div>
   );
@@ -116,6 +115,21 @@ const paymentFailureRoute = createRoute({
   component: PaymentFailurePage,
 });
 
+const checkoutWaitRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/checkout-wait',
+  component: () => (
+    <RequireAuth>
+      <CheckoutWaitPage />
+    </RequireAuth>
+  ),
+  validateSearch: (search: Record<string, unknown>): { orderId?: string } => {
+    return {
+      orderId: typeof search.orderId === 'string' ? search.orderId : undefined,
+    };
+  },
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   menuRoute,
@@ -127,6 +141,7 @@ const routeTree = rootRoute.addChildren([
   adminMenuRoute,
   paymentSuccessRoute,
   paymentFailureRoute,
+  checkoutWaitRoute,
 ]);
 
 const router = createRouter({ routeTree });

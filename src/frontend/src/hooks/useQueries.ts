@@ -1,43 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { MenuItem, Order, ChefBooking, DashboardMetrics, UserProfile } from '../backend';
-
-// User Profile Queries
-export function useGetCallerUserProfile() {
-  const { actor, isFetching: actorFetching } = useActor();
-
-  const query = useQuery<UserProfile | null>({
-    queryKey: ['currentUserProfile'],
-    queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.getCallerUserProfile();
-    },
-    enabled: !!actor && !actorFetching,
-    retry: false,
-  });
-
-  return {
-    ...query,
-    isLoading: actorFetching || query.isLoading,
-    isFetched: !!actor && query.isFetched,
-  };
-}
-
-export function useSaveCallerUserProfile() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (profile: UserProfile) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.saveCallerUserProfile(profile);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
-    },
-  });
-}
+import type { MenuItem, Order, ChefBooking, DashboardMetrics } from '../backend';
 
 // Admin Check
 export function useIsCallerAdmin() {
@@ -132,6 +96,7 @@ export function useGetOrder(orderId: bigint | null) {
       return actor.getOrder(orderId);
     },
     enabled: !!actor && !isFetching && orderId !== null,
+    refetchInterval: 3000, // Poll every 3 seconds for real-time updates
   });
 }
 
@@ -173,6 +138,20 @@ export function useIsStripeConfigured() {
     queryFn: async () => {
       if (!actor) return false;
       return actor.isStripeConfigured();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// Cash on Delivery Configuration
+export function useGetAcceptsCashOnDelivery() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<boolean>({
+    queryKey: ['acceptsCashOnDelivery'],
+    queryFn: async () => {
+      if (!actor) return true; // Default to true
+      return actor.getAcceptsCashOnDelivery();
     },
     enabled: !!actor && !isFetching,
   });

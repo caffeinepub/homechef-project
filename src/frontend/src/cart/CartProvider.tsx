@@ -60,6 +60,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setItems([]);
+    localStorage.removeItem('cart');
   };
 
   const totalAmount = items.reduce((sum, item) => sum + Number(item.menuItem.price) * item.quantity, 0);

@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-frontend-so-that-immediately-after-a-successful-login-the-ui-re-checks-admin-status-and-updates-navigation-admin-gating-without-requiring-a-manual-hard-refresh-so-the-first-user-can-see-the-admin-link-as-soon-as-they-log-in-and-are-assigned-admin",
-      "featureTitle": "Update the frontend so that immediately after a successful login, the UI re-checks admin status and updates navigation/admin gating without requiring a manual hard refresh, so the first user can see the \"Admin\" link as soon as they log in and are assigned admin.",
+      "featureId": "feature-update-the-post-acceptance-checkout-ui-so-that-the-only-available-payment-method-is-cash-on-delivery-remove-disable-card-stripe-and-qr-code-payment-options-and-ensure-the-user-can-complete-the-flow-without-being-redirected-to-stripe-related-pages",
+      "featureTitle": "Update the post-acceptance checkout UI so that the only available payment method is Cash on Delivery (remove/disable Card (Stripe) and QR code payment options), and ensure the user can complete the flow without being redirected to Stripe-related pages.",
       "files": [
-        "frontend/src/components/auth/LoginButton.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/CheckoutWaitPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,7 +19,53 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-29"
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-disable-stripe-checkout-session-creation-from-the-frontend-when-the-app-is-configured-for-cash-on-delivery-only-and-show-a-clear-english-error-message-if-any-stripe-card-payment-action-is-attempted-e-g-via-direct-invocation",
+      "featureTitle": "Disable Stripe checkout session creation from the frontend when the app is configured for Cash on Delivery only, and show a clear English error message if any Stripe/card-payment action is attempted (e.g., via direct invocation).",
+      "files": [
+        "frontend/src/hooks/payments/useCreateCheckoutSession.ts",
+        "frontend/src/pages/CheckoutWaitPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-or-hide-admin-stripe-setup-ui-and-any-user-facing-text-that-suggests-card-stripe-payments-are-supported-updating-text-to-state-that-payments-are-cash-on-delivery-only",
+      "featureTitle": "Remove or hide admin Stripe setup UI and any user-facing text that suggests card/Stripe payments are supported, updating text to state that payments are Cash on Delivery only.",
+      "files": [
+        "frontend/src/components/payments/PaymentSetup.tsx",
+        "frontend/src/pages/PaymentFailurePage.tsx",
+        "frontend/src/pages/PaymentSuccessPage.tsx",
+        "frontend/src/pages/admin/AdminDashboardPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

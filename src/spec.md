@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Ensure the first authenticated user on a fresh canister is permanently bootstrapped as the sole admin so the Admin UI appears immediately after login.
+**Goal:** Restrict checkout to Cash on Delivery only and fully disable Stripe/card/QR payment flows across the app.
 
 **Planned changes:**
-- Update backend admin bootstrap logic so that when no admin is set, the first *authenticated* principal making a backend call is assigned admin permanently, and no later principals are auto-assigned.
-- Ensure `isCallerAdmin()` participates in bootstrap: on a fresh canister, the first authenticated caller receives `true` immediately; anonymous callers receive `false` and do not trigger bootstrap.
-- Update frontend to re-check admin status immediately after successful login and update navbar/admin gating without requiring a hard refresh; ensure logout removes admin UI access and shows existing “Access Denied” behavior for non-admins.
+- Update the post-acceptance Checkout Wait UI to show only Cash on Delivery, removing/hiding Card (Stripe) and QR payment options, and ensure completing the flow does not redirect to Stripe-related success/failure pages.
+- Ensure completing Cash on Delivery sets the order payment reference to a Cash-on-Delivery marker (e.g., "CASH_ON_DELIVERY") and navigates the user to the Orders page.
+- Disable Stripe checkout session creation paths in the frontend when Cash on Delivery only mode is in effect, and show a clear English error if any Stripe/card action is still invoked directly.
+- Enforce Cash on Delivery only in the backend by preventing Stripe checkout session creation while keeping non-Stripe order operations working.
+- Remove/hide admin Stripe setup UI and update any checkout/payment-related copy to clearly state payments are Cash on Delivery only (English text).
 
-**User-visible outcome:** The first user to log in on a new deployment immediately sees the “Admin” link after login and retains admin access on refresh/re-login, while all other users do not see/administer admin-only features.
+**User-visible outcome:** Users can place orders and complete checkout using only Cash on Delivery, with no Stripe/card/QR options shown and no redirects to Stripe payment success/failure pages; admins no longer see Stripe setup when COD-only is enabled.

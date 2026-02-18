@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useCart } from '../cart/CartProvider';
-import { useCreateCheckoutSession } from '../hooks/payments/useCreateCheckoutSession';
 import { useActor } from '../hooks/useActor';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useAuthRedirect } from '../hooks/useAuthRedirect';
+import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,18 +12,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
-import type { ShoppingItem, OrderItem } from '../backend';
+import type { OrderItem } from '../backend';
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, clearCart, totalAmount } = useCart();
   const { actor } = useActor();
   const { identity } = useInternetIdentity();
   const { storeIntendedRoute } = useAuthRedirect();
-  const createCheckoutSession = useCreateCheckoutSession();
+  const navigate = useNavigate();
 
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [specialInstructions, setSpecialInstructions] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const isAuthenticated = !!identity;
 
@@ -50,6 +51,8 @@ export default function CartPage() {
       return;
     }
 
+    setIsProcessing(true);
+
     try {
       // Create order in backend first
       const orderItems: OrderItem[] = items.map((item) => ({
@@ -65,30 +68,18 @@ export default function CartPage() {
         specialInstructions.trim()
       );
 
-      // Create checkout session
-      const shoppingItems: ShoppingItem[] = items.map((item) => ({
-        productName: item.menuItem.name,
-        productDescription: item.menuItem.description,
-        priceInCents: item.menuItem.price,
-        quantity: BigInt(item.quantity),
-        currency: 'usd',
-      }));
-
-      const session = await createCheckoutSession.mutateAsync(shoppingItems);
-
-      if (!session?.url) {
-        throw new Error('Payment session missing url');
-      }
-
-      // Store order ID for payment success page
-      sessionStorage.setItem('pendingOrderId', orderId.toString());
-
-      // Clear cart and redirect to payment
+      // Clear cart after successful order creation
       clearCart();
-      window.location.href = session.url;
+
+      // Navigate to checkout wait page
+      navigate({ to: '/checkout-wait', search: { orderId: orderId.toString() } });
+      
+      toast.success('Order created! Waiting for admin acceptance...');
     } catch (error: any) {
       console.error('Checkout error:', error);
-      toast.error(error.message || 'Failed to initiate checkout');
+      toast.error(error.message || 'Failed to create order');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -102,7 +93,7 @@ export default function CartPage() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">Add some delicious items from our menu!</p>
-            <Button onClick={() => (window.location.href = '/menu')}>Browse Menu</Button>
+            <Button onClick={() => navigate({ to: '/menu' })}>Browse Menu</Button>
           </CardContent>
         </Card>
       </div>
@@ -239,9 +230,9 @@ export default function CartPage() {
                 className="w-full"
                 size="lg"
                 onClick={handleCheckout}
-                disabled={createCheckoutSession.isPending || !deliveryAddress.trim() || !contactNumber.trim()}
+                disabled={isProcessing || !deliveryAddress.trim() || !contactNumber.trim()}
               >
-                {createCheckoutSession.isPending ? 'Processing...' : isAuthenticated ? 'Proceed to Checkout' : 'Sign In to Checkout'}
+                {isProcessing ? 'Processing...' : isAuthenticated ? 'Proceed to Checkout' : 'Sign In to Checkout'}
               </Button>
             </CardFooter>
           </Card>

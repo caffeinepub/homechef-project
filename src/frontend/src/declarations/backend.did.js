@@ -146,6 +146,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'deleteMenuItem' : IDL.Func([IDL.Nat], [], []),
+  'getAcceptsCashOnDelivery' : IDL.Func([], [IDL.Bool], ['query']),
   'getAllAvailableMenuItems' : IDL.Func([], [IDL.Vec(MenuItem)], ['query']),
   'getAllMenuItems' : IDL.Func([], [IDL.Vec(MenuItem)], ['query']),
   'getAvailableItemsByCategory' : IDL.Func(
@@ -196,6 +197,7 @@ export const idlService = IDL.Service({
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'setAcceptsCashOnDelivery' : IDL.Func([IDL.Bool], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'transform' : IDL.Func(
       [TransformationInput],
@@ -364,6 +366,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'deleteMenuItem' : IDL.Func([IDL.Nat], [], []),
+    'getAcceptsCashOnDelivery' : IDL.Func([], [IDL.Bool], ['query']),
     'getAllAvailableMenuItems' : IDL.Func([], [IDL.Vec(MenuItem)], ['query']),
     'getAllMenuItems' : IDL.Func([], [IDL.Vec(MenuItem)], ['query']),
     'getAvailableItemsByCategory' : IDL.Func(
@@ -418,6 +421,7 @@ export const idlFactory = ({ IDL }) => {
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'setAcceptsCashOnDelivery' : IDL.Func([IDL.Bool], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'transform' : IDL.Func(
         [TransformationInput],

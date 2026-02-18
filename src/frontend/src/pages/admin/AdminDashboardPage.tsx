@@ -1,13 +1,15 @@
 import React from 'react';
-import { useGetDashboardMetrics } from '../../hooks/useQueries';
+import { useGetDashboardMetrics, useGetAcceptsCashOnDelivery } from '../../hooks/useQueries';
 import { useUpdateOrderStatus } from '../../hooks/mutations/useOrderAdminMutations';
 import { useUpdateBookingStatus } from '../../hooks/mutations/useBookingAdminMutations';
 import KpiCard from '../../components/admin/KpiCard';
 import OrderStatusBadge from '../../components/orders/OrderStatusBadge';
 import BookingStatusBadge from '../../components/bookings/BookingStatusBadge';
 import PaymentSetup from '../../components/payments/PaymentSetup';
+import DevResetSection from '../../components/admin/DevResetSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Select,
   SelectContent,
@@ -15,11 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { DollarSign, Package, Clock, Calendar } from 'lucide-react';
+import { DollarSign, Package, Clock, Calendar, Info } from 'lucide-react';
 import type { OrderStatus, BookingStatus } from '../../backend';
 
 export default function AdminDashboardPage() {
   const { data: metrics, isLoading } = useGetDashboardMetrics();
+  const { data: acceptsCashOnDelivery } = useGetAcceptsCashOnDelivery();
   const updateOrderStatus = useUpdateOrderStatus();
   const updateBookingStatus = useUpdateBookingStatus();
 
@@ -86,6 +89,15 @@ export default function AdminDashboardPage() {
         <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
         <p className="text-muted-foreground">Manage orders, bookings, and menu items</p>
       </div>
+
+      {acceptsCashOnDelivery && (
+        <Alert className="mb-6">
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Payment Method:</strong> This application is configured to accept Cash on Delivery only.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* KPI Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -221,7 +233,7 @@ export default function AdminDashboardPage() {
         </Card>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8 space-y-8">
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
@@ -235,6 +247,8 @@ export default function AdminDashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        <DevResetSection />
       </div>
     </div>
   );

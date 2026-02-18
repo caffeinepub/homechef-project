@@ -134,6 +134,7 @@ actor {
   let categories = Set.empty<Text>();
 
   var stripeConfig : ?Stripe.StripeConfiguration = null;
+  var acceptsCashOnDelivery = true;
 
   public query func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
     OutCall.transform(input);
@@ -157,12 +158,30 @@ actor {
     stripeConfig != null;
   };
 
+  public shared ({ caller }) func setAcceptsCashOnDelivery(acceptsCash : Bool) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can perform this action");
+    };
+    acceptsCashOnDelivery := acceptsCash;
+  };
+
+  public query ({ caller }) func getAcceptsCashOnDelivery() : async Bool {
+    acceptsCashOnDelivery;
+  };
+
   public func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
     await Stripe.getSessionStatus(getStripeConfig(), sessionId, transform);
   };
 
   public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
+    if (not carriesDigitalPayments()) {
+      Runtime.trap("Digital payments are not available at the moment. Please use cash on delivery instead.");
+    };
     await Stripe.createCheckoutSession(getStripeConfig(), caller, items, successUrl, cancelUrl, transform);
+  };
+
+  func carriesDigitalPayments() : Bool {
+    stripeConfig != null;
   };
 
   // User Profile Management
@@ -565,7 +584,7 @@ actor {
 
     let allOrders = orders.values().toArray();
     let totalOrders = allOrders.size();
-    
+
     let totalRevenue = allOrders.foldLeft(
       0,
       func(acc, order) {

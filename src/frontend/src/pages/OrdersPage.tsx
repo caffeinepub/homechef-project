@@ -1,7 +1,6 @@
 import React from 'react';
 import { useGetOrdersByUser } from '../hooks/useQueries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import OrderStatusBadge from '../components/orders/OrderStatusBadge';
 import { Package } from 'lucide-react';
 
@@ -78,7 +77,15 @@ export default function OrdersPage() {
 
                 {order.paymentReference && (
                   <div className="text-xs text-muted-foreground">
-                    Payment Ref: {order.paymentReference}
+                    Payment: {
+                      order.paymentReference.startsWith('STRIPE_') 
+                        ? 'Card (Stripe)' 
+                        : order.paymentReference === 'QR_CODE_PAYMENT'
+                        ? 'QR Code'
+                        : order.paymentReference === 'CASH_ON_DELIVERY'
+                        ? 'Cash on Delivery'
+                        : order.paymentReference
+                    }
                   </div>
                 )}
               </div>

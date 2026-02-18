@@ -14,17 +14,17 @@ export default function PaymentFailurePage() {
           <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
             <XCircle className="h-10 w-10 text-destructive" />
           </div>
-          <CardTitle className="text-2xl">Payment Failed</CardTitle>
+          <CardTitle className="text-2xl">Payment Not Completed</CardTitle>
           <CardDescription>
-            Your payment was not completed. Your order has not been placed.
+            Your payment was not completed successfully.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Don't worry, you can try again or contact us if you need assistance with your payment.
+            Your order has been created and is waiting for payment. You can view your order status in the Orders page.
           </p>
           <div className="flex flex-col gap-2">
-            <Button onClick={() => navigate({ to: '/cart' })}>Return to Cart</Button>
+            <Button onClick={() => navigate({ to: '/orders' })}>View My Orders</Button>
             <Button variant="outline" onClick={() => navigate({ to: '/menu' })}>
               Browse Menu
             </Button>

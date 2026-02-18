@@ -1,51 +1,84 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T12:21:46.963Z",
+  "generatedAt": "2026-02-18T13:53:52.963Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 1,
+    "total": 4,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-27",
-        "summary": "Fix the Motoko backend admin bootstrap so that when no admin is configured yet, the first authenticated principal to call the backend is permanently assigned the admin role, and subsequent users are not assigned admin automatically.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-28",
-        "summary": "Ensure the backend method used by the frontend to determine admin status (frontend calls `actor.isCallerAdmin()`) participates in the admin bootstrap logic so the first authenticated user immediately receives `true` from `isCallerAdmin()` after login.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-29",
-        "summary": "Update the frontend so that immediately after a successful login, the UI re-checks admin status and updates navigation/admin gating without requiring a manual hard refresh, so the first user can see the \"Admin\" link as soon as they log in and are assigned admin.",
+        "id": "REQ-1",
+        "summary": "Update the post-acceptance checkout UI so that the only available payment method is Cash on Delivery (remove/disable Card (Stripe) and QR code payment options), and ensure the user can complete the flow without being redirected to Stripe-related pages.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/LoginButton.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/CheckoutWaitPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/auth/LoginButton.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/CheckoutWaitPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Disable Stripe checkout session creation from the frontend when the app is configured for Cash on Delivery only, and show a clear English error message if any Stripe/card-payment action is attempted (e.g., via direct invocation).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/payments/useCreateCheckoutSession.ts",
+          "frontend/src/pages/CheckoutWaitPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/payments/useCreateCheckoutSession.ts",
+          "frontend/src/pages/CheckoutWaitPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Enforce Cash on Delivery only at the backend by preventing creation of Stripe checkout sessions when Cash on Delivery is the only supported payment method.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Remove or hide admin Stripe setup UI and any user-facing text that suggests card/Stripe payments are supported, updating text to state that payments are Cash on Delivery only.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/payments/PaymentSetup.tsx",
+          "frontend/src/pages/admin/AdminDashboardPage.tsx",
+          "frontend/src/pages/PaymentSuccessPage.tsx",
+          "frontend/src/pages/PaymentFailurePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/payments/PaymentSetup.tsx",
+          "frontend/src/pages/admin/AdminDashboardPage.tsx",
+          "frontend/src/pages/PaymentSuccessPage.tsx",
+          "frontend/src/pages/PaymentFailurePage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/auth/LoginButton.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/payments/PaymentSetup.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/payments/useCreateCheckoutSession.ts",
     "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/CheckoutWaitPage.tsx",
+    "frontend/src/pages/PaymentFailurePage.tsx",
+    "frontend/src/pages/PaymentSuccessPage.tsx",
+    "frontend/src/pages/admin/AdminDashboardPage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

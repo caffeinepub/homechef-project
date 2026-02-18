@@ -1,26 +1,78 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "HomeChef Kitchen — Refresh admin gating immediately after login",
+  "title": "HomeChef Kitchen — Cash on Delivery only checkout",
   "requirements": [
     {
-      "id": "REQ-29",
-      "summary": "Refresh admin status immediately after login/logout so navbar and admin route gating update without a hard refresh.",
+      "id": "REQ-1",
+      "summary": "Restrict the post-acceptance checkout UI to Cash on Delivery only and complete the flow without any Stripe/QR redirects.",
       "acceptanceCriteria": [
-        "After login, the navbar updates to show the \"Admin\" link as soon as `isCallerAdmin()` becomes `true`, without requiring a full page refresh.",
-        "After logout, the \"Admin\" link disappears and admin-only pages show the existing English \"Access Denied\" UI for non-admin users.",
-        "No changes are made to any files under `frontend/src/hooks/useInternetIdentity.ts` or other immutable paths listed in SYSTEM_CONTEXT."
+        "On the Checkout Wait page, after an order is accepted, the UI shows only Cash on Delivery as the payment option (no Card/Stripe option, no QR code option).",
+        "Attempting to access the removed payment actions from the UI is not possible (no visible buttons/links for Card/Stripe or QR payment).",
+        "Completing Cash on Delivery updates the order payment reference to a Cash-on-Delivery marker (e.g., \"CASH_ON_DELIVERY\") and navigates the user to the Orders page.",
+        "The checkout flow does not redirect the user to /payment-success or /payment-failure for normal Cash on Delivery usage."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/LoginButton.tsx",
-          "operation": "modify",
-          "description": "After a successful Internet Identity login, force an immediate React Query refresh of admin-gating data by invalidating/refetching the `isCallerAdmin` query (and any other auth-derived queries if needed) so the Navbar updates without a hard refresh. Ensure logout continues to clear cached auth/admin state (align with the authorization component guidance for clearing cached application data on logout). Verify the component's usage instructions before implementing."
-        },
-        {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Harden `useIsCallerAdmin()` to reliably re-evaluate on identity changes by keying the query with the current principal (e.g., include principal string in the queryKey) and configuring refetch behavior so the first post-login render can observe the updated `actor.isCallerAdmin()` result. Keep UI text in English and preserve the existing Access Denied behavior via `RequireAdmin`. Verify the component's usage instructions before implementing."
+          "description": "Add a React Query hook to read the backend Cash-on-Delivery-only configuration via getAcceptsCashOnDelivery(), so the UI can conditionally hide Stripe/QR payment options and Stripe setup. (Verify the component's usage instructions before implementing.)"
+        },
+        {
+          "path": "frontend/src/pages/CheckoutWaitPage.tsx",
+          "operation": "modify",
+          "description": "Update the accepted-order state to display Cash on Delivery as the only payment method; remove/hide Card (Stripe) and QR code UI actions and update the user-facing copy to English Cash-on-Delivery-only messaging. Ensure the Cash on Delivery action updates paymentReference to \"CASH_ON_DELIVERY\" and navigates to /orders without any /payment-success or /payment-failure redirects. (Verify the component's usage instructions before implementing.)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Prevent Stripe checkout session creation from the frontend when configured for Cash on Delivery only, and show a clear English error if Stripe/card payment is attempted.",
+      "acceptanceCriteria": [
+        "The create-checkout-session mutation path is not called by any user-facing flow when Cash on Delivery is the only payment method.",
+        "If code paths still attempt to invoke Stripe checkout session creation, the user receives an English error indicating that only Cash on Delivery is supported."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/payments/useCreateCheckoutSession.ts",
+          "operation": "modify",
+          "description": "Gate Stripe checkout session creation behind the Cash on Delivery configuration: if getAcceptsCashOnDelivery() indicates Cash on Delivery only mode, throw a clear English error (e.g., only Cash on Delivery is supported) and do not call createCheckoutSession(). Preserve existing non-COD error handling. (Verify the component's usage instructions before implementing.)"
+        },
+        {
+          "path": "frontend/src/pages/CheckoutWaitPage.tsx",
+          "operation": "modify",
+          "description": "Remove any remaining user-facing invocation paths that call useCreateCheckoutSession() in Cash on Delivery only mode (e.g., Card/Stripe button handlers) so normal users cannot trigger Stripe flows from the UI. (Verify the component's usage instructions before implementing.)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Hide admin Stripe setup UI and remove/replace any user-facing text suggesting card/Stripe or QR payments are supported; use English Cash on Delivery only messaging.",
+      "acceptanceCriteria": [
+        "The admin Stripe configuration dialog does not appear in normal admin usage when Cash on Delivery is the only payment method.",
+        "User-facing copy in checkout/payment-related pages does not instruct users to pay by card/Stripe or QR code and instead references Cash on Delivery only.",
+        "All updated user-facing text is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/payments/PaymentSetup.tsx",
+          "operation": "modify",
+          "description": "Hide the Stripe setup dialog when the app is configured for Cash on Delivery only by consulting the Cash on Delivery configuration hook; ensure Stripe setup is not shown in normal admin usage in COD-only mode. Also update any remaining dialog copy, if it can still appear, to be accurate and in English. (Verify the component's usage instructions before implementing.)"
+        },
+        {
+          "path": "frontend/src/pages/admin/AdminDashboardPage.tsx",
+          "operation": "modify",
+          "description": "Ensure admin UI does not prompt or instruct admins to configure Stripe when Cash on Delivery only mode is enabled; optionally replace with a brief English note indicating payments are Cash on Delivery only (without exposing Stripe setup). (Verify the component's usage instructions before implementing.)"
+        },
+        {
+          "path": "frontend/src/pages/PaymentSuccessPage.tsx",
+          "operation": "modify",
+          "description": "Update user-facing copy to avoid suggesting Stripe/card payments are generally supported when Cash on Delivery only mode is enabled (keep content English). No routing changes required, but ensure the page messaging aligns with COD-only configuration. (Verify the component's usage instructions before implementing.)"
+        },
+        {
+          "path": "frontend/src/pages/PaymentFailurePage.tsx",
+          "operation": "modify",
+          "description": "Update user-facing copy to avoid suggesting retrying card/Stripe or choosing different payment methods when Cash on Delivery only mode is enabled (keep content English). (Verify the component's usage instructions before implementing.)"
         }
       ]
     }

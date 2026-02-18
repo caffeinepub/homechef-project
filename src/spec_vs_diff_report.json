@@ -1,48 +1,46 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T12:21:46.960Z",
-  "summary": "Frontend changes add React Query invalidation after login and a principal-keyed admin-status query to refresh admin gating without a hard refresh. No backend Motoko changes are shown, so the required backend admin bootstrap logic and isCallerAdmin() behavior are not implemented in the provided diff summary. The diff also includes unrelated query caching/retry changes and modifications to metadata/state files not requested.",
+  "generatedAt": "2026-02-18T13:53:52.960Z",
+  "summary": "The diff adds Cash-on-Delivery gating in the frontend Stripe checkout-session hook and hides the admin Stripe setup dialog when Cash on Delivery mode is enabled. However, backend enforcement for blocking Stripe checkout-session creation in COD-only mode is not clearly shown in the truncated backend diff, and Stripe payment-success logic/UI remains present, which conflicts with the intent of a COD-only checkout experience.",
   "missing_requirements": [
     {
-      "id": "REQ-27",
-      "requirement": "Fix the Motoko backend admin bootstrap so that when no admin is configured yet, the first authenticated principal to call the backend is permanently assigned the admin role, and subsequent users are not assigned admin automatically.",
-      "reason": "The diff summary shows only frontend and metadata file modifications; there are no changes to the Motoko backend (e.g., backend/main.mo) implementing persisted first-caller admin assignment or enforcing admin-only access for subsequent users.",
+      "id": "REQ-3",
+      "requirement": "Enforce Cash on Delivery only at the backend by preventing creation of Stripe checkout sessions when Cash on Delivery is the only supported payment method.",
+      "reason": "The backend diff shows a new `acceptsCashOnDelivery` flag, but the provided truncated snippet does not show `createCheckoutSession` being blocked/trapped when COD-only mode is enabled.",
       "evidence": [
-        "Modified files list contains only frontend/src/components/auth/LoginButton.tsx, frontend/src/hooks/useQueries.ts, frontend-file-summaries.txt, project_state.json (no backend/main.mo)"
+        "backend/main.mo (truncated)"
       ]
     },
     {
-      "id": "REQ-28",
-      "requirement": "Ensure actor.isCallerAdmin() participates in bootstrap logic so the first authenticated user immediately receives true from isCallerAdmin() after login; anonymous callers must return false without assigning admin.",
-      "reason": "No backend changes are shown that would make isCallerAdmin() assign the first admin and persist it, or explicitly handle anonymous callers without assignment.",
+      "id": "REQ-1",
+      "requirement": "On the Checkout Wait page, after an order is accepted, the UI shows only Cash on Delivery as the payment option (no Card/Stripe option, no QR code option), and the user can complete the flow without Stripe redirects.",
+      "reason": "The CheckoutWaitPage diff is truncated before the actual payment-option rendering, so it is not verifiable from the provided summary that Stripe/Card or QR payment UI elements were removed/hidden and that no redirects to Stripe-related pages occur from the UI.",
       "evidence": [
-        "Modified files list contains only frontend/src/components/auth/LoginButton.tsx, frontend/src/hooks/useQueries.ts, frontend-file-summaries.txt, project_state.json (no backend/main.mo)"
+        "frontend/src/pages/CheckoutWaitPage.tsx (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Expanded React Query caching/retry behavior for non-admin queries (menu queries) beyond the requested admin re-check after login.",
-      "reason": "REQ-29 only asks to re-check admin status after login and update gating; the diff also adjusts caching (staleTime/gcTime) and retry configuration for menu queries, which is unrelated to admin bootstrap/gating.",
+      "description": "Stripe payment success flow still updates orders with a `STRIPE_<sessionId>` payment reference via `getStripeSessionStatus` on the Payment Success page.",
+      "reason": "BuildRequest aims to restrict checkout to Cash on Delivery only and avoid Stripe-related pages for normal usage; keeping/adding Stripe success processing and Stripe-specific payment references is not part of the requested COD-only flow.",
       "evidence": [
-        "frontend/src/hooks/useQueries.ts (menu query sections showing staleTime/gcTime/retry adjustments)"
-      ]
-    },
-    {
-      "description": "Changes to project metadata/state files unrelated to admin bootstrap or admin gating.",
-      "reason": "REQ-27/28/29 do not request updates to project_state.json or frontend-file-summaries.txt; these modifications appear ancillary and not required for the fix.",
-      "evidence": [
-        "project_state.json",
-        "frontend-file-summaries.txt"
+        "frontend/src/pages/PaymentSuccessPage.tsx"
       ]
     }
   ],
-  "confidence": 0.74,
+  "confidence": 0.62,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/auth/LoginButton.tsx",
+    "frontend/src/components/payments/PaymentSetup.tsx",
+    "frontend/src/hooks/payments/useCreateCheckoutSession.ts",
     "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/CheckoutWaitPage.tsx",
+    "frontend/src/pages/PaymentFailurePage.tsx",
+    "frontend/src/pages/PaymentSuccessPage.tsx",
+    "frontend/src/pages/admin/AdminDashboardPage.tsx",
     "project_state.json"
   ]
 }

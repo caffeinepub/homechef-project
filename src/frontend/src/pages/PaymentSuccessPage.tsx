@@ -25,10 +25,10 @@ export default function PaymentSuccessPage() {
         const sessionStatus = await actor.getStripeSessionStatus(sessionId);
 
         if ('completed' in sessionStatus && pendingOrderId) {
-          // Update order with payment reference
+          // Update order with Stripe payment reference
           await actor.updateOrderPaymentRef(
             BigInt(pendingOrderId),
-            sessionId,
+            `STRIPE_${sessionId}`,
             { __kind__: 'confirmed', confirmed: null }
           );
           sessionStorage.removeItem('pendingOrderId');

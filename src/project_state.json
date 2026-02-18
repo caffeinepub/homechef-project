@@ -1,198 +1,32 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
-  "summary": "Build a single-chef home-kitchen food ordering and chef-booking web app using Django + Django Templates + Bootstrap 5, with Razorpay-only payments, order status tracking, chef booking requests, and a custom staff-only admin dashboard; SQLite for dev and PostgreSQL-ready prod config.",
-  "architectural_notes": [
-    "Tech stack: Django (latest stable) with Django Templates + Bootstrap 5; optional DRF if APIs needed; Razorpay for payments.",
-    "Database: SQLite for development; configuration should be PostgreSQL-ready for production.",
-    "Business rule: food is prepared only after the order is accepted; single chef who is also the admin/staff user.",
-    "Admin bootstrap rule: if no admin user exists/configured, the first successfully authenticated user becomes the single chef/admin and the assignment is persisted; all admin-only actions remain restricted to this user thereafter.",
-    "Payments provider decision: use Razorpay (not Stripe).",
-    "Dev reset requirement: provide a safe way (command/management command) to wipe users/admin assignment so the 'first authenticated user becomes admin' bootstrap can be re-run.",
-    "Payment provider direction: Razorpay-only; remove/disable Stripe payment method and any Stripe-specific UI text/config."
-  ],
-  "known_issues": [
-    "No admin user/principal is currently assigned, so no one can access admin-only UI/workflows (Admin Dashboard never appears).",
-    "Menu is not loading correctly (reported by user).",
-    "Menu items are not being added to the cart (reported by user).",
-    "Application performance issue: app should load faster (reported by user).",
-    "Admin bootstrap logic appears broken: first authenticated user is not being assigned admin / Admin Dashboard not appearing for the first user."
-  ],
-  "isFixRequest": true,
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-implement-internet-identity-authentication-in-the-react-ui-and-enforce-login-required-flows-for-placing-orders-viewing-order-status-and-submitting-chef-booking-requests",
-      "title": "Implement Internet Identity authentication in the React UI and enforce login-required flows for placing orders, viewing order status, and submitting chef booking requests.",
+      "id": "feature-update-the-post-acceptance-checkout-ui-so-that-the-only-available-payment-method-is-cash-on-delivery-remove-disable-card-stripe-and-qr-code-payment-options-and-ensure-the-user-can-complete-the-flow-without-being-redirected-to-stripe-related-pages",
+      "title": "Update the post-acceptance checkout UI so that the only available payment method is Cash on Delivery (remove/disable Card (Stripe) and QR code payment options), and ensure the user can complete the flow without being redirected to Stripe-related pages.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-menu-browsing-and-menu-administration-users-can-view-categories-and-available-items-admin-can-add-edit-delete-menu-items-assign-categories-set-preparation-time-set-image-and-toggle-availability",
-      "title": "Implement menu browsing and menu administration: users can view categories and available items; admin can add/edit/delete menu items, assign categories, set preparation time, set image, and toggle availability.",
+      "id": "feature-disable-stripe-checkout-session-creation-from-the-frontend-when-the-app-is-configured-for-cash-on-delivery-only-and-show-a-clear-english-error-message-if-any-stripe-card-payment-action-is-attempted-e-g-via-direct-invocation",
+      "title": "Disable Stripe checkout session creation from the frontend when the app is configured for Cash on Delivery only, and show a clear English error message if any Stripe/card-payment action is attempted (e.g., via direct invocation).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-or-hide-admin-stripe-setup-ui-and-any-user-facing-text-that-suggests-card-stripe-payments-are-supported-updating-text-to-state-that-payments-are-cash-on-delivery-only",
+      "title": "Remove or hide admin Stripe setup UI and any user-facing text that suggests card/Stripe payments are supported, updating text to state that payments are Cash on Delivery only.",
       "reqIds": [
         "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-client-side-cart-with-add-remove-update-quantity-compute-totals-and-a-checkout-flow-that-creates-an-order-in-pending-state-only-after-user-confirms-they-want-to-pay",
-      "title": "Implement a client-side cart with add/remove/update quantity, compute totals, and a checkout flow that creates an Order in Pending state only after user confirms they want to pay.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-order-lifecycle-rules-in-the-backend-food-is-prepared-only-after-the-admin-accepts-the-order-admin-can-accept-reject-and-update-status-through-the-defined-workflow-users-can-fetch-and-view-their-order-status-history-updates",
-      "title": "Implement order lifecycle rules in the backend: food is prepared only after the admin accepts the order; admin can accept/reject and update status through the defined workflow; users can fetch and view their order status history/updates.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-chef-booking-request-flow-logged-in-users-can-submit-a-booking-with-event-date-location-and-event-details-admin-can-approve-reject-users-can-view-their-booking-statuses",
-      "title": "Implement chef booking request flow: logged-in users can submit a booking with event date, location, and event details; admin can approve/reject; users can view their booking statuses.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-provide-a-payment-confirmation-gated-ordering-flow-because-razorpay-integration-is-not-supported-in-this-stack-implement-payments-using-stripe-instead-while-keeping-the-same-functional-requirements-create-payment-intent-order-confirm-payment-store-payment-reference-and-only-confirm-the-order-after-successful-payment-show-success-failure-pages",
-      "title": "Provide a payment-confirmation gated ordering flow. Because Razorpay integration is not supported in this stack, implement payments using Stripe instead while keeping the same functional requirements: create payment intent/order, confirm payment, store payment reference, and only confirm the order after successful payment; show success/failure pages.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-a-custom-staff-only-admin-dashboard-page-in-the-react-ui-separate-from-any-default-admin-tooling-that-shows-total-orders-total-revenue-pending-orders-recent-orders-and-chef-booking-requests-and-allows-admin-to-accept-reject-orders-change-order-status-and-approve-reject-bookings",
-      "title": "Build a custom staff-only Admin Dashboard page in the React UI (separate from any default admin tooling) that shows total orders, total revenue, pending orders, recent orders, and chef booking requests, and allows admin to accept/reject orders, change order status, and approve/reject bookings.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-a-coherent-clean-modern-responsive-bootstrap-inspired-ui-using-tailwind-shadcn-components-stack-constraint-with-a-consistent-visual-theme-appropriate-for-a-home-kitchen-chef-brand-including-a-navbar-with-home-menu-cart-orders-status-book-chef-and-admin-admin-only-entries-plus-styled-status-badges",
-      "title": "Create a coherent, clean, modern, responsive Bootstrap-inspired UI using Tailwind + shadcn components (stack constraint) with a consistent visual theme appropriate for a home-kitchen chef brand, including a navbar with Home, Menu, Cart, Orders/Status, Book Chef, and Admin (admin-only) entries, plus styled status badges.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-generated-static-brand-images-and-wire-them-into-the-ui-as-frontend-static-assets-do-not-serve-images-from-the-backend",
-      "title": "Add generated static brand images and wire them into the UI as frontend static assets (do not serve images from the backend).",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-provide-runnable-project-documentation-for-local-development-environment-variables-required-admin-principal-payment-keys-commands-to-run-the-app-locally-and-how-to-initialize-initial-admin-menu-data",
-      "title": "Provide runnable project documentation for local development: environment variables required (admin principal, payment keys), commands to run the app locally, and how to initialize initial admin/menu data.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-project-documentation-to-reflect-that-an-admin-principal-does-not-need-to-be-preconfigured-because-the-first-authenticated-user-becomes-admin-automatically-and-include-a-brief-note-on-how-to-recover-in-local-development-by-reinstalling-redeploying-the-canister-if-the-wrong-principal-became-admin",
-      "title": "Update project documentation to reflect that an admin principal does not need to be preconfigured because the first authenticated user becomes admin automatically, and include a brief note on how to recover in local development by reinstalling/redeploying the canister if the wrong principal became admin.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-do-not-implement-razorpay-payments-keep-the-existing-stripe-based-payment-flow-and-update-user-facing-text-to-clearly-state-that-payments-are-handled-via-stripe-in-this-app-build",
-      "title": "Do not implement Razorpay payments; keep the existing Stripe-based payment flow and update user-facing text to clearly state that payments are handled via Stripe in this app build.",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-project-documentation-to-reflect-that-razorpay-is-not-supported-in-this-stack-and-that-stripe-is-the-supported-payment-provider-for-the-payment-gated-order-confirmation-flow",
-      "title": "Update project documentation to reflect that Razorpay is not supported in this stack and that Stripe is the supported payment provider for the payment-gated order confirmation flow.",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-expose-the-dev-reset-capability-in-the-admin-dashboard-ui-as-a-clearly-labeled-destructive-action-that-requires-explicit-confirmation-before-invoking-the-backend-reset-method",
-      "title": "Expose the dev reset capability in the Admin Dashboard UI as a clearly labeled, destructive action that requires explicit confirmation before invoking the backend reset method.",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-do-not-add-razorpay-payments-or-razorpay-key-configuration-ensure-user-facing-text-remains-in-english-and-clearly-states-that-payments-are-handled-via-stripe-in-this-app-build-and-razorpay-keys-cannot-be-used-here",
-      "title": "Do not add Razorpay payments or Razorpay key configuration; ensure user-facing text remains in English and clearly states that payments are handled via Stripe in this app build and Razorpay keys cannot be used here.",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-do-not-remove-stripe-payment-functionality-update-the-app-s-user-facing-messaging-to-clearly-state-that-payments-are-processed-via-stripe-and-that-razorpay-is-not-supported-in-this-build-including-on-checkout-and-payment-result-pages",
-      "title": "Do not remove Stripe payment functionality. Update the app’s user-facing messaging to clearly state that payments are processed via Stripe and that Razorpay is not supported in this build, including on checkout and payment result pages.",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-project-documentation-to-explicitly-state-that-razorpay-is-not-supported-in-this-stack-and-that-stripe-is-the-only-supported-payment-provider-for-the-payment-gated-order-confirmation-flow",
-      "title": "Update project documentation to explicitly state that Razorpay is not supported in this stack and that Stripe is the only supported payment provider for the payment-gated order confirmation flow.",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-the-menu-page-so-users-can-add-menu-items-to-the-cart-even-when-not-signed-in-and-only-require-authentication-at-checkout-placing-an-order-not-at-add-to-cart-time",
-      "title": "Fix the Menu page so users can add menu items to the cart even when not signed in, and only require authentication at checkout/placing an order (not at add-to-cart time).",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-cart-state-persistence-so-saving-the-cart-to-localstorage-does-not-fail-when-cart-items-include-bigint-fields-e-g-menu-item-id-price-and-ensure-the-cart-can-be-restored-correctly-after-a-refresh",
-      "title": "Fix cart state persistence so saving the cart to localStorage does not fail when cart items include BigInt fields (e.g., menu item id/price), and ensure the cart can be restored correctly after a refresh.",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-improve-menu-loading-reliability-and-perceived-performance-by-adding-a-proper-loading-ui-skeleton-placeholder-grid-caching-tuning-react-query-settings-for-menu-queries-and-adding-a-clear-error-state-with-retry-when-menu-fetch-fails",
-      "title": "Improve menu loading reliability and perceived performance by adding a proper loading UI (skeleton/placeholder grid), caching/tuning React Query settings for menu queries, and adding a clear error state with retry when menu fetch fails.",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-navigation-so-the-cart-entry-and-cart-icon-button-are-available-even-when-the-user-is-not-authenticated-while-keeping-orders-book-chef-admin-links-gated-appropriately",
-      "title": "Update navigation so the Cart entry and cart icon/button are available even when the user is not authenticated, while keeping Orders/Book Chef/Admin links gated appropriately.",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-frontend-so-that-immediately-after-a-successful-login-the-ui-re-checks-admin-status-and-updates-navigation-admin-gating-without-requiring-a-manual-hard-refresh-so-the-first-user-can-see-the-admin-link-as-soon-as-they-log-in-and-are-assigned-admin",
-      "title": "Update the frontend so that immediately after a successful login, the UI re-checks admin status and updates navigation/admin gating without requiring a manual hard refresh, so the first user can see the \"Admin\" link as soon as they log in and are assigned admin.",
-      "reqIds": [
-        "REQ-29"
       ],
       "version": 1
     }
@@ -200,153 +34,20 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Set up Django project structure (homechef_project) with core app, templates/static/media, and production-ready settings (SQLite dev, PostgreSQL-ready).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Implement authentication (register/login/logout) using Django auth with access control and login-required flows for ordering, booking, and order status viewing.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Create menu system with Category and MenuItem models (including images, preparation time, availability) and admin CRUD + availability toggle.",
+      "summary": "Restrict payment method to accept only Cash on Delivery (disable other payment methods)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Implement cart and order system (Order/OrderItem) with order statuses, admin accept/reject, status updates, user-facing order status page, and revenue tracking.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Integrate Razorpay payments: create Razorpay order, capture payment, store payment_id, confirm orders only on successful payment, success/failure pages, env-var keys.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Implement chef booking system (ChefBooking) with pending/approved/rejected workflow and admin review/approval.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Build a custom staff-only admin dashboard (not default Django admin) showing KPIs (total orders/revenue/pending/recent) and chef booking requests with management actions.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Create Bootstrap 5 responsive UI templates (home, menu, cart, order status with badges, book chef, admin dashboard, login/register) with navbar and modern styling.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Provide complete runnable project output including migrations, requirements, environment variable usage, and setup/run instructions (migrate, createsuperuser, runserver).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-11",
-      "summary": "Create backend data models and persistence for Category, MenuItem, Order, OrderItem, and ChefBooking, including the status enums and timestamps needed for the specified workflows.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-12",
-      "summary": "Add backend admin access control for a single chef/admin and restrict all management actions (menu management, order acceptance/rejection/status updates, booking approvals, dashboard metrics) to that admin.",
+      "summary": "Enforce Cash on Delivery only at the backend by preventing creation of Stripe checkout sessions when Cash on Delivery is the only supported payment method.",
       "reqIds": [
         "REQ-3"
       ],
       "status": "pending"
-    },
-    {
-      "id": "AR-13",
-      "summary": "Implement admin bootstrap logic: if no admin is configured yet, automatically assign the first successfully authenticated user as the single chef/admin (persisted), so the Admin Dashboard becomes accessible thereafter.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-14",
-      "summary": "Update the Motoko backend so that if no admin has been configured yet, the first authenticated principal to trigger an authenticated backend call is permanently assigned the single admin role, and subsequent logins do not change the admin.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-15",
-      "summary": "Implement (or correct) a backend method used by the frontend to determine admin status (the frontend calls actor.isCallerAdmin()) and ensure this method participates in the bootstrap logic so the first authenticated user immediately sees admin access after logging in.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-16",
-      "summary": "Replace Internet Identity with custom authentication: user signup/login forms, separate admin signup flow (admin signup/login not shown to normal users), add Google auth + OTP-based authentication, and include forgot-password/reset-password flow.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-17",
-      "summary": "Switch payments to Razorpay (do not use Stripe) while keeping the same payment-gated order confirmation flow (create payment order, verify/capture, store payment reference, success/failure pages, env keys).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-18",
-      "summary": "Provide a way to remove/reset the current admin and all existing users (dev reset) so admin bootstrap can run again and a fresh admin can be assigned.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-19",
-      "summary": "Add Razorpay key configuration support (environment variables/settings) so the user can supply Razorpay keys for payment processing.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-20",
-      "summary": "Add a backend admin-only \"dev reset\" method that clears the current admin assignment/roles and deletes all existing user-related state so that admin bootstrap can run again from a clean slate.",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-21",
-      "summary": "Remove Stripe payment method/integration and make payments Razorpay-only across the app (backend flow, UI text, and configuration).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-22",
-      "summary": "Fix the Motoko backend admin bootstrap so that when no admin is configured yet, the first authenticated principal to call the backend is permanently assigned the admin role, and subsequent users are not assigned admin automatically.",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-23",
-      "summary": "Ensure the backend method used by the frontend to determine admin status (frontend calls `actor.isCallerAdmin()`) participates in the admin bootstrap logic so the first authenticated user immediately receives `true` from `isCallerAdmin()` after login.",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "homechef_project",
+  "projectName": "HomeChef Kitchen",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

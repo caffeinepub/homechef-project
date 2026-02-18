@@ -128,6 +128,7 @@ export interface _SERVICE {
     bigint
   >,
   'deleteMenuItem' : ActorMethod<[bigint], undefined>,
+  'getAcceptsCashOnDelivery' : ActorMethod<[], boolean>,
   'getAllAvailableMenuItems' : ActorMethod<[], Array<MenuItem>>,
   'getAllMenuItems' : ActorMethod<[], Array<MenuItem>>,
   'getAvailableItemsByCategory' : ActorMethod<[string], Array<MenuItem>>,
@@ -154,6 +155,7 @@ export interface _SERVICE {
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'setAcceptsCashOnDelivery' : ActorMethod<[boolean], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateBookingPaymentRef' : ActorMethod<

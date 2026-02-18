@@ -10,7 +10,7 @@ import { Menu, ShoppingCart } from 'lucide-react';
 
 export default function Navbar() {
   const { identity } = useInternetIdentity();
-  const { data: isAdmin } = useIsCallerAdmin();
+  const { data: isAdmin, isLoading: isAdminLoading } = useIsCallerAdmin();
   const { itemCount } = useCart();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -23,7 +23,7 @@ export default function Navbar() {
     { to: '/cart', label: 'Cart', showAlways: true },
     ...(isAuthenticated ? [{ to: '/orders', label: 'Orders' }] : []),
     ...(isAuthenticated ? [{ to: '/book-chef', label: 'Book Chef' }] : []),
-    ...(isAdmin ? [{ to: '/admin', label: 'Admin' }] : []),
+    ...(isAuthenticated && isAdmin && !isAdminLoading ? [{ to: '/admin', label: 'Admin' }] : []),
   ];
 
   return (

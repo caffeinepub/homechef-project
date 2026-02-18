@@ -164,6 +164,7 @@ export interface backendInterface {
     createChefBooking(eventDate: Time, location: string, eventDetails: string, price: bigint): Promise<bigint>;
     createOrder(items: Array<OrderItem>, deliveryAddress: string, contactNumber: string, specialInstructions: string): Promise<bigint>;
     deleteMenuItem(itemId: bigint): Promise<void>;
+    getAcceptsCashOnDelivery(): Promise<boolean>;
     getAllAvailableMenuItems(): Promise<Array<MenuItem>>;
     getAllMenuItems(): Promise<Array<MenuItem>>;
     getAvailableItemsByCategory(category: string): Promise<Array<MenuItem>>;
@@ -190,6 +191,7 @@ export interface backendInterface {
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setAcceptsCashOnDelivery(acceptsCash: boolean): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateBookingPaymentRef(bookingId: bigint, paymentRef: string, newStatus: BookingStatus): Promise<void>;
